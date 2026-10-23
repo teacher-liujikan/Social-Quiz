@@ -83,6 +83,11 @@ button.chip:hover{border-color:var(--ink)}
 .seat.has{border-color:var(--board);background:color-mix(in srgb,var(--board) 12%,var(--card))}
 .seat.has::after{content:"";position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:var(--yellow)}
 .seat:hover{border-color:var(--ink)}
+.rules{background:var(--card);border:2px solid var(--yellow);border-radius:18px;padding:1rem 1.2rem;text-align:left;width:100%;display:grid;gap:.6rem}
+.rules h2{font-size:1.4rem}
+.rules ol{margin:0;padding-left:1.6rem;display:grid;gap:.6rem}
+.rules li{font-size:clamp(1.15rem,4.2vw,1.35rem);line-height:1.7}
+.rules li b{color:var(--red)}
 .login .hint{color:var(--muted);font-size:.95rem}
 
 /* 地圖 */
@@ -881,9 +886,11 @@ function viewMap(){
       </button>
     </div>
     <div class="foot"><span>怎麼拿扭蛋幣？每多拿 1 顆星就得 1 枚，打敗魔王再加 5 枚。</span>
+      <button class="icon-btn" id="rules">📜 再看一次老師的提醒</button>
       <button class="icon-btn" id="reset">清除紀錄重新開始</button></div>
   </div>`;
   bindTop();
+  $('#rules').onclick = viewRules;
   $('#toBadges').onclick = viewBadges;
   $('#toShelf').onclick = viewShelf;
   $('#toGacha').onclick = viewGacha;
@@ -1211,11 +1218,40 @@ function viewGacha(result){
   };
 }
 
+/* ===== 闖關須知 ===== */
+function viewRules(){
+  scrollTop();
+  app.innerHTML = `<div class="wrap login">
+    <div class="board">
+      <div class="eyebrow">三上社會・期中考範圍</div>
+      <h1>社會期中闖關島</h1>
+      <div class="chalk-line"></div>
+      <p>第一單元〈我的新學習〉＋第二單元〈學校生活〉</p>
+    </div>
+    <div class="figrow">${['g2','g9','L1','L2','g7'].map(id=>figSVG(id)).join('')}</div>
+    <section class="rules">
+      <h2>📜 闖關前，請先看老師的提醒</h2>
+      <ol>
+        <li><b>先複習，再測驗。</b>每一關都要先把重點卡讀完，想一想紅色格子的答案，再去做小測驗。</li>
+        <li><b>不要急著轉扭蛋！</b>扭蛋只是小獎勵，最重要的是你有沒有把社會這兩個單元學好。</li>
+        <li><b>忘記了就翻課本。</b>答錯或想不起來的地方，一定要打開社會課本再複習一次喔！</li>
+        <li><b>愛護眼睛。</b>使用 30 分鐘，就要休息 10 分鐘。</li>
+      </ol>
+    </section>
+    <button class="btn gold" id="start" style="font-size:1.3rem;padding:.7rem 2rem">我知道了，開始闖關！</button>
+  </div>`;
+  $('#start').onclick = viewMap;
+}
+
 /* ===== 啟動 ===== */
 (function boot(){
   me = 1;
   if(!DB.players[1]){ DB.players[1] = newPlayer(1,''); saveAll(); }
-  viewMap();
+  viewRules();
+  // 用了 30 分鐘提醒休息
+  setTimeout(()=>modal(`<div style="font-size:3rem">👀</div><h3 style="font-size:1.5rem">已經用了 30 分鐘囉！</h3>
+    <p>讓眼睛休息 10 分鐘吧！看看遠方、喝口水，等一下再回來闖關。</p>
+    <div class="row center"><button class="btn" id="ok">好，我去休息</button></div>`, box=>{ box.querySelector('#ok').onclick=closeModal; }), 30*60*1000);
 })();
 </script>
 
